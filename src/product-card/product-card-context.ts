@@ -2,12 +2,18 @@ import { createContext, useContext } from "react";
 type Product = {
   id: string;
   name: string;
+  bonus?: boolean;
   price: {
     currency: string;
     value: number;
   };
   image: {
-    url: string;
+    portrait: {
+      url: string;
+    };
+    landscape: {
+      url: string;
+    };
   };
 };
 
@@ -17,13 +23,13 @@ type ProductCardContext = {
 
 const ProductCardContext = createContext<ProductCardContext | null>(null);
 
-function useProductCard() {
+function useProduct() {
   const context = useContext(ProductCardContext);
   if (!context) {
-    throw new Error("useProductCard must be used within a ProductCardProvider");
+    throw new Error("useProduct must be used within a ProductCard.* Component");
   }
 
   return context;
 }
 
-export { useProductCard, ProductCardContext, type Product };
+export { useProduct, ProductCardContext, type Product };
