@@ -8,7 +8,8 @@ import { ProductCardActions } from "./components/product-card-actions";
 import { ProductCardTags } from "./components/product-card-tags";
 import { ProductCardActionsWine } from "./components/product-card-actions-wine";
 import { Bla } from "./components/product-card-blabla";
-import { gql, useQuery } from "urql";
+import { useQuery } from "urql";
+import { graphql } from "gql.tada";
 
 type ProductCard = {
   image?: ReactNode;
@@ -21,7 +22,7 @@ type ProductCard = {
   bonus?: boolean;
 };
 
-const ProductsQuery = gql`
+const ProductQuery = graphql(`
   #graphql
   query Product($id: ID!) {
     product(where: { id: $id }) {
@@ -41,7 +42,7 @@ const ProductsQuery = gql`
       }
     }
   }
-`;
+`);
 
 const ProductCard = ({
   image = null,
@@ -62,16 +63,18 @@ const ProductCard = ({
   const hasPriceAndName = hasPrice && hasName; // if both are present we need to render a divider
 
   const [result] = useQuery({
-    query: ProductsQuery,
+    query: ProductQuery,
     variables: { id: productId },
   });
+
   const { data, fetching, error } = result;
+
   if (fetching)
     return (
       <div className="w-full rounded-lg bg-gray-200 transition-colors animate-pulse h-96"></div>
     );
-  if (error) return <p>Oh no... {error.message}</p>;
 
+  if (error) return <p>Oh no... {error.message}</p>;
   if (!data || !data.product) return <p>No data</p>;
 
   return (
@@ -82,15 +85,19 @@ const ProductCard = ({
           name: data.product.title,
           image: {
             portrait: {
-              url: data.product.image.portrait.url,
+              url:
+                data.product.image?.portrait.url ||
+                "https://via.placeholder.com/250x350",
             },
             landscape: {
-              url: data.product.image.landscape.url,
+              url:
+                data.product.image?.landscape.url ||
+                "https://via.placeholder.com/650x250",
             },
           },
           price: {
-            value: data.product.price.value,
-            currency: data.product.price.currency,
+            value: data.product.price?.value || 0,
+            currency: data.product.price?.currency || "EUR",
           },
         },
       }}
