@@ -12,9 +12,13 @@
   "dependencies": {
     "@radix-ui/react-aspect-ratio": "^1.0.3",
     "clsx": "^2.1.0",
+    "graphql": "^16.8.1",
+    "graphql-request": "^6.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwind-merge": "^2.2.2"
+    "tailwind-merge": "^2.2.2",
+    "tailwindcss-animate": "^1.0.7",
+    "urql": "^4.0.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

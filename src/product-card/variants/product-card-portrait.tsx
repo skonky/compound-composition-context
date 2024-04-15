@@ -2,13 +2,13 @@ import ProductCard from "../product-card";
 import { Product } from "../product-card-context";
 
 type ProductCardPortrait = {
-  product: Product;
+  productId: string;
   onAddToCart: (product: Product) => void;
   bonus?: boolean;
 };
 
 export const ProductCardPortrait = ({
-  product,
+  productId,
   onAddToCart,
   bonus = false,
 }: ProductCardPortrait) => {
@@ -16,13 +16,13 @@ export const ProductCardPortrait = ({
     <ProductCard
       className="max-w-[400px] w-full m-auto md:w-auto md:max-w-full md:m-0"
       bonus={bonus}
-      key={product.id}
-      product={product}
+      key={productId}
+      productId={productId}
       name={<ProductCard.Name />}
       tags={<ProductCard.Tags />}
       image={<ProductCard.ImagePortrait />}
       price={<ProductCard.Price />}
-      actions={<ProductCard.ActionsWine onAddToCart={onAddToCart} />}
+      actions={<ProductCard.Actions onAddToCart={onAddToCart} />}
     />
   );
 };

@@ -2,18 +2,18 @@ import ProductCard from "../product-card";
 import { Product } from "../product-card-context";
 
 type ProductCardLandscape = {
-  product: Product;
+  productId: string;
   onAddToCart: (product: Product) => void;
 };
 
 export const ProductCardLandscape = ({
-  product,
+  productId,
   onAddToCart,
 }: ProductCardLandscape) => {
   return (
     <ProductCard
-      key={product.id}
-      product={product}
+      key={productId}
+      productId={productId}
       name={<ProductCard.Name />}
       image={<ProductCard.ImageLandscape />}
       price={<ProductCard.Price />}

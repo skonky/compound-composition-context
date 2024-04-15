@@ -128,4 +128,4 @@ const useCart = () => {
   return context;
 };
 
-export { CartContext, CartProvider, useCart, CartItem };
+export { CartContext, CartProvider, useCart, type CartItem };

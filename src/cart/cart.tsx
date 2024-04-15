@@ -22,17 +22,17 @@ export const CartComponent = ({ totalPrice }: CartComponent) => {
   return (
     <div
       className={cn(
-        "bg-white p-2 shadow-md mb-10 text-right",
+        "bg-white p-2 transition-shadow hover:shadow-md mb-10 text-right",
         collapsed && "w-40 ml-auto",
       )}
     >
-      <div className="flex gap-3 justify-end">
+      <div className="flex relative gap-3 justify-end">
         <p className="text-xl font-black">€ {totalPrice.toFixed(2)} </p>
         {!collapsed && <button onClick={cart.emptyCart}>🗑️</button>}
       </div>
       <hr className="my-3" />
       {!collapsed ? (
-        <div className="flex flex-col gap-4">
+        <div className="flex bg-white flex-col gap-4">
           {items.map((item) => (
             <div
               key={item.id}

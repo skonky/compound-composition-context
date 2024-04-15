@@ -1,9 +1,5 @@
 import { PropsWithChildren, ReactNode } from "react";
-import {
-  ProductCardContext,
-  Product,
-  useProduct,
-} from "./product-card-context";
+import { ProductCardContext, useProduct } from "./product-card-context";
 import { cn } from "../utils";
 import { ProductCardPrice } from "./components/product-card-price";
 import { ProductCardImagePortrait } from "./components/product-card-portrait-image";
@@ -12,6 +8,7 @@ import { ProductCardActions } from "./components/product-card-actions";
 import { ProductCardTags } from "./components/product-card-tags";
 import { ProductCardActionsWine } from "./components/product-card-actions-wine";
 import { Bla } from "./components/product-card-blabla";
+import { gql, useQuery } from "urql";
 
 type ProductCard = {
   image?: ReactNode;
@@ -19,16 +16,38 @@ type ProductCard = {
   price?: ReactNode;
   actions?: ReactNode;
   tags?: ReactNode;
-  product: Product;
+  productId: string;
   className?: string;
   bonus?: boolean;
 };
+
+const ProductsQuery = gql`
+  #graphql
+  query Product($id: ID!) {
+    product(where: { id: $id }) {
+      id
+      title
+      price {
+        value
+        currency
+      }
+      image {
+        portrait {
+          url
+        }
+        landscape {
+          url
+        }
+      }
+    }
+  }
+`;
 
 const ProductCard = ({
   image = null,
   name = null,
   price = null,
-  product,
+  productId,
   className,
   tags = null,
   actions = null,
@@ -42,8 +61,40 @@ const ProductCard = ({
   const hasPriceOrName = hasPrice || hasName; // if either is present we need to render some markup
   const hasPriceAndName = hasPrice && hasName; // if both are present we need to render a divider
 
+  const [result] = useQuery({
+    query: ProductsQuery,
+    variables: { id: productId },
+  });
+  const { data, fetching, error } = result;
+  if (fetching)
+    return (
+      <div className="w-full rounded-lg bg-gray-200 transition-colors animate-pulse h-96"></div>
+    );
+  if (error) return <p>Oh no... {error.message}</p>;
+
+  if (!data || !data.product) return <p>No data</p>;
+
   return (
-    <ProductCardContext.Provider value={{ product }}>
+    <ProductCardContext.Provider
+      value={{
+        product: {
+          id: data.product.id,
+          name: data.product.title,
+          image: {
+            portrait: {
+              url: data.product.image.portrait.url,
+            },
+            landscape: {
+              url: data.product.image.landscape.url,
+            },
+          },
+          price: {
+            value: data.product.price.value,
+            currency: data.product.price.currency,
+          },
+        },
+      }}
+    >
       <div
         className={cn(
           className,
@@ -59,7 +110,7 @@ const ProductCard = ({
             {hasPrice && price}
           </div>
         )}
-        {hasActions && <div>{actions}</div>}
+        {hasActions && <div className="mb-3">{actions}</div>}
       </div>
     </ProductCardContext.Provider>
   );
