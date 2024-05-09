@@ -2,6 +2,7 @@ import { MouseEvent, useMemo } from "react";
 import { Product, useProduct } from "../product-card-context";
 import { useCart } from "../../cart/cart-context";
 import { cn } from "../../utils";
+import { Button } from "@adhese/ui/button";
 
 type ProductCardActions = {
   onAddToCart: (product: Product) => void;
@@ -27,36 +28,32 @@ export const ProductCardActions = ({ onAddToCart }: ProductCardActions) => {
   return (
     <div className="flex gap-4 items-center justify-center p-3">
       {!itemInCart ? (
-        <button
+        <Button
           onClick={handleOnClickAddToCart}
           className={cn(
-            "bg-black text-xs px-5 py-2 text-white rounded-full",
+            "text-white",
             product.bonus && "bg-orange-500 text-white",
           )}
         >
           Add to cart
-        </button>
+        </Button>
       ) : (
         <>
-          <button
+          <Button
+            size="icon"
             onClick={handleOnClickAddToCart}
-            className={cn(
-              "bg-black text-xs px-3 py-2 text-white rounded-full",
-              product.bonus && "bg-orange-500 text-white",
-            )}
+            className={cn(product.bonus && "bg-orange-500 text-white")}
           >
             +
-          </button>
+          </Button>
           {itemInCart.quantity}
-          <button
+          <Button
+            size="icon"
             onClick={handleOnClickDecreaseOrRemoveFromCart}
-            className={cn(
-              "bg-gray-200 text-xs px-3 py-2 text-black rounded-full",
-              product.bonus && "bg-orange-300 text-white",
-            )}
+            className={cn(product.bonus && "bg-orange-300 text-white")}
           >
             -{" "}
-          </button>
+          </Button>
         </>
       )}
     </div>

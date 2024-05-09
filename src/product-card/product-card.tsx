@@ -1,15 +1,14 @@
 import { PropsWithChildren, ReactNode } from "react";
-import { ProductCardContext, useProduct } from "./product-card-context";
-import { cn } from "../utils";
+import { useQuery } from "urql";
 import { ProductCardPrice } from "./components/product-card-price";
 import { ProductCardImagePortrait } from "./components/product-card-portrait-image";
 import { ProductCardImageLandscape } from "./components/product-card-landscape-image";
 import { ProductCardActions } from "./components/product-card-actions";
 import { ProductCardTags } from "./components/product-card-tags";
 import { ProductCardActionsWine } from "./components/product-card-actions-wine";
-import { Bla } from "./components/product-card-blabla";
-import { useQuery } from "urql";
-import { graphql } from "gql.tada";
+import { ProductCardContext, useProduct } from "./product-card-context";
+import ProductQuery from "./queries/product-query";
+import { cn } from "../utils";
 
 type ProductCard = {
   image?: ReactNode;
@@ -21,28 +20,6 @@ type ProductCard = {
   className?: string;
   bonus?: boolean;
 };
-
-const ProductQuery = graphql(`
-  #graphql
-  query Product($id: ID!) {
-    product(where: { id: $id }) {
-      id
-      title
-      price {
-        value
-        currency
-      }
-      image {
-        portrait {
-          url
-        }
-        landscape {
-          url
-        }
-      }
-    }
-  }
-`);
 
 const ProductCard = ({
   image = null,
@@ -105,7 +82,7 @@ const ProductCard = ({
       <div
         className={cn(
           className,
-          "border border-slate-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow",
+          "relative text-center border border-slate-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
         )}
       >
         {hasImage && <div>{image}</div>}
@@ -135,6 +112,5 @@ ProductCard.Price = ProductCardPrice;
 ProductCard.Actions = ProductCardActions;
 ProductCard.Tags = ProductCardTags;
 ProductCard.ActionsWine = ProductCardActionsWine;
-ProductCard.Bla = Bla;
 
 export default ProductCard;

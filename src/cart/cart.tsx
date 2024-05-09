@@ -2,6 +2,14 @@ import { useMemo, useState } from "react";
 import { Product } from "../product-card/product-card-context";
 import { CartItem, useCart } from "./cart-context";
 import { cn } from "../utils";
+import { Button } from "@adhese/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@adhese/ui/tooltip";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@adhese/ui/collapsible";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 type CartComponent = {
   items?: CartItem<Product>[];
@@ -11,83 +19,82 @@ type CartComponent = {
 export const CartComponent = ({ totalPrice }: CartComponent) => {
   const cart = useCart();
   const items = useMemo(() => cart.items, [cart.items]);
-  const [collapsed, setCollapsed] = useState(true);
+  const [open, setOpen] = useState(false);
 
   if (totalPrice === 0)
     return (
-      <div className="text-gray-700 bg-white z-10 p-3 shadow-md w-40 ml-auto">
+      <div className="text-left text-muted-foreground z-10 py-3">
         Cart is empty
       </div>
     );
+
   return (
-    <div
-      className={cn(
-        "bg-white p-2 transition-shadow hover:shadow-md mb-10 text-right",
-        collapsed && "w-40 ml-auto",
-      )}
-    >
-      <div className="flex relative gap-3 justify-end">
-        <p className="text-xl font-black">€ {totalPrice.toFixed(2)} </p>
-        {!collapsed && <button onClick={cart.emptyCart}>🗑️</button>}
-      </div>
-      <hr className="my-3" />
-      {!collapsed ? (
-        <div className="flex bg-white flex-col gap-4">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className={cn(
-                "flex gap-5 items-center justify-between",
-                item.bonus && "text-orange-500",
-              )}
-            >
-              <p className="text-xs">
-                {item.name} ({item.quantity})
-              </p>
-              <div className="flex items-center">
-                <span className="text-xs">
-                  € {(item.price.value * item.quantity).toFixed(2)}
-                </span>
-                <button
-                  className="ml-3 text-xs"
-                  onClick={() =>
-                    cart.decreaseQuantityOrRemoveProduct(item.id, item.quantity)
-                  }
-                >
-                  ❌
-                </button>
-              </div>
-            </div>
+    <Collapsible onOpenChange={setOpen} open={open}>
+      <CollapsibleTrigger className="flex gap-2" asChild>
+        <Button variant="outline" size="default" className="my-3">
+          <ChevronUp
+            size={18}
+            className={cn(open ? "rotate-180" : "rotate-0", "transition-all")}
+          />
+          {open ? "Hide cart" : "Show cart"}
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between">Lijstje:</div>
+          {items.map(item => (
+            <Tooltip key={item.id}>
+              <TooltipTrigger asChild>
+                <div>
+                  <div
+                    className={cn(
+                      "grid grid-cols-3",
+                      item.bonus && "text-orange-500"
+                    )}
+                  >
+                    <p className="text-xs truncate col-span-2">
+                      <span className="text-muted-foreground inline-block w-6">
+                        {item.quantity}x
+                      </span>{" "}
+                      {item.name}
+                    </p>
+                    <div className="flex items-center col-span-1 justify-end gap-1">
+                      <span className="text-xs">
+                        € {(item.price.value * item.quantity).toFixed(2)}
+                      </span>
+                      <button
+                        className="text-[10px]"
+                        onClick={() =>
+                          cart.decreaseQuantityOrRemoveProduct(
+                            item.id,
+                            item.quantity
+                          )
+                        }
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  </div>
+                  <TooltipContent>{item.name}</TooltipContent>
+                </div>
+              </TooltipTrigger>
+            </Tooltip>
           ))}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 text-right">
             <hr />
-            <p className="text-xs text-right mr-6">
+            <p className="text-xs mr-1 text-muted-foreground">
               Sub Total: € {totalPrice.toFixed(2)}
             </p>
-            <p className="text-xs text-right mr-6">
+            <p className="text-xs mr-1 text-muted-foreground">
               VAT(21%): € {(totalPrice * 0.21).toFixed(2)}
             </p>
-            <p className="text-xs text-right mr-6 font-bold">
+            <p className="text-xs mr-1 font-bold">
               Total: € {totalPrice.toFixed(2)}
             </p>
             <hr />
           </div>
-
-          <button
-            className="text-xs text-right pr-4"
-            onClick={() => setCollapsed(true)}
-          >
-            🙈 Hide cart
-          </button>
         </div>
-      ) : (
-        <button
-          className="text-xs text-right"
-          onClick={() => setCollapsed(false)}
-        >
-          👀 Show cart
-        </button>
-      )}
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
